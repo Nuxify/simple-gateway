@@ -2,6 +2,7 @@
 using Traefik
 
 ## Setup
+
 1. Clone https://github.com/Nuxify/simple-gateway
 2. Create `.env` (from .env.example) and provide correct values
 3. Setup the services hosts and ports in .env
@@ -9,11 +10,12 @@ using Traefik
 4. Up the network with `make up`
 
 ## Services Configuration
+
 - Make sure to appropriately name the `mapped` host to this standard: `*_API_URL=`
 - The first argument of the variable `MUST` be equal to the service prefix in routes.
-```go
+
 .env
-==========
+```go
 AUTH_API_URL=http://localhost:8000
 
 is expected to re-route request from,
