@@ -1,0 +1,31 @@
+version: "3.3"
+
+services:
+  api-gateway:
+    build: .
+    container_name: api-gateway
+    restart: unless-stopped
+    networks:
+      - proxy
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api-gateway.entrypoints=http"
+      - "traefik.http.routers.api-gateway.rule=Host(`${API_URL}`)"
+      - "traefik.http.routers.api-gateway-secure.entrypoints=https"
+      - "traefik.http.routers.api-gateway-secure.rule=Host(`${API_URL}`)"
+      - "traefik.http.routers.api-gateway-secure.tls=true"
+      - "traefik.http.routers.api-gateway-secure.tls.certresolver=http"
+      - "traefik.http.routers.api-gateway-secure.service=api-gateway"
+      - "traefik.http.services.api-gateway.loadbalancer.server.port=${API_URL_REST_PORT}"
+      - "traefik.docker.network=proxy"
+      # global middleware declaration
+      - "traefik.http.middlewares.api-gateway-auth.forwardauth.address=${AUTH_MIDDLEWARE_ENDPOINT}"
+      # middleware assignment
+      - "traefik.http.routers.api-gateway.middlewares=https-redirect@file"
+      - "traefik.http.routers.api-gateway-secure.middlewares=api-gateway-auth"
+networks:
+  proxy:
+    external: true
